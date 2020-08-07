@@ -10,21 +10,41 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+# System libraries
 import os
 from oscar.defaults import *
+
+# Third-party libraries
+from dj_database_url import config
+from dotenv import load_dotenv
+
+# Django modules
+from django.contrib.messages import constants as messages
+
+# Django apps
+
+
+# Current-app modules
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Load the environment variable for youbee
+load_dotenv()
+
+CONFIG = os.getenv('CONFIG', 'DEV')
+
+if CONFIG == 'PROD_HEROKU':
+    import django_heroku
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'c5!7+@jzd4=dbhg)uzfj^6z1_su361z03&hzdrkfi4-8dy0&z8'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = (CONFIG == 'DEV' or CONFIG == 'TEST')
 
 ALLOWED_HOSTS = []
 
@@ -85,6 +105,14 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    ]
+
+if DEBUG:
+    MIDDLEWARE += [
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    ]
+
+MIDDLEWARE += [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
@@ -128,14 +156,13 @@ WSGI_APPLICATION = 'youbee_shop.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'ATOMIC_REQUESTS': True,
-    }
-}
+DATABASES = {'default': config(), }
 
+if DEBUG:
+    # Enabled for django-debug-toolbar to work
+    # https://docs.djangoproject.com/en/2.2/ref/settings/#internal-ips
+
+    INTERNAL_IPS = ['127.0.0.1']
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
@@ -174,10 +201,20 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static/"),
+]
 STATIC_ROOT = 'staticfiles/'
+
+# Media files (uploaded by the user)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
     },
 }
+
+if CONFIG == 'PROD_HEROKU':
+    django_heroku.settings(config=locals())
