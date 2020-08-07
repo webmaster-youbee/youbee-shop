@@ -107,10 +107,10 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     ]
 
-if DEBUG:
-    MIDDLEWARE += [
-        'debug_toolbar.middleware.DebugToolbarMiddleware',
-    ]
+# if DEBUG:
+#     MIDDLEWARE += [
+#         'debug_toolbar.middleware.DebugToolbarMiddleware',
+#     ]
 
 MIDDLEWARE += [
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -158,11 +158,11 @@ WSGI_APPLICATION = 'youbee_shop.wsgi.application'
 
 DATABASES = {'default': config(), }
 
-if DEBUG:
-    # Enabled for django-debug-toolbar to work
-    # https://docs.djangoproject.com/en/2.2/ref/settings/#internal-ips
-
-    INTERNAL_IPS = ['127.0.0.1']
+# if DEBUG:
+#     # Enabled for django-debug-toolbar to work
+#     # https://docs.djangoproject.com/en/2.2/ref/settings/#internal-ips
+#
+#     INTERNAL_IPS = ['127.0.0.1']
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
