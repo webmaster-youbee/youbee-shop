@@ -99,6 +99,9 @@ INSTALLED_APPS = [
     'treebeard',
     'sorl.thumbnail',
     'django_tables2',
+
+    # youbee_shop apps
+    'data',
 ]
 
 MIDDLEWARE = [
@@ -214,6 +217,14 @@ HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
     },
+}
+
+OSCAR_INITIAL_ORDER_STATUS = 'Pending'
+OSCAR_INITIAL_LINE_STATUS = 'Pending'
+OSCAR_ORDER_STATUS_PIPELINE = {
+    'Pending': ('Being processed', 'Cancelled',),
+    'Being processed': ('Processed', 'Cancelled',),
+    'Cancelled': (),
 }
 
 if CONFIG == 'PROD_HEROKU':
